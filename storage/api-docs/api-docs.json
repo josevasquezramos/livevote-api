@@ -1,0 +1,210 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API documentation",
+        "description": "Here you can find the documentation for the API of LiveVote.",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/vote": {
+            "post": {
+                "tags": [
+                    "Voting"
+                ],
+                "summary": "Submit or change a vote",
+                "description": "Handle incoming vote requests, enforce a 5-second cooldown, update participant records, and broadcast real-time updates.",
+                "operationId": "d4cdcc525e135c24d1444fd02ac53990",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "guest_id",
+                                    "team"
+                                ],
+                                "properties": {
+                                    "guest_id": {
+                                        "description": "Unique identifier for the guest",
+                                        "type": "string",
+                                        "example": "user_987654321"
+                                    },
+                                    "team": {
+                                        "description": "The team the participant is voting for",
+                                        "type": "string",
+                                        "example": "red"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vote successfully registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "red": {
+                                            "type": "integer",
+                                            "example": 152
+                                        },
+                                        "blue": {
+                                            "type": "integer",
+                                            "example": 148
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error (e.g., missing guest_id or invalid team)"
+                    },
+                    "429": {
+                        "description": "Too Many Requests (Cooldown active)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Please wait before changing teams again."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/status": {
+            "get": {
+                "tags": [
+                    "Voting"
+                ],
+                "summary": "Get current vote totals",
+                "description": "Endpoint to retrieve the current vote totals for both teams.",
+                "operationId": "ec659344e4cc80cad00114e897db1685",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of vote counts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "red": {
+                                            "type": "integer",
+                                            "example": 152
+                                        },
+                                        "blue": {
+                                            "type": "integer",
+                                            "example": 148
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/participants": {
+            "get": {
+                "tags": [
+                    "Voting"
+                ],
+                "summary": "Get list of participants (Paginated)",
+                "description": "Retrieves a paginated list of participants.",
+                "operationId": "62262813620ee00edeb57d6856910106",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of participants",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "guest_id": {
+                                                        "type": "string",
+                                                        "example": "device_xyz_123"
+                                                    },
+                                                    "team": {
+                                                        "type": "string",
+                                                        "example": "red"
+                                                    },
+                                                    "last_voted_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2026-06-04T20:00:00.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/participants?page=1"
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 65
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Voting",
+            "description": "Voting"
+        }
+    ]
+}
