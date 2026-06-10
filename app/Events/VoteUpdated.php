@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -32,7 +33,7 @@ class VoteUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('live-votes')
+            new PresenceChannel('presence-live-votes')
         ];
     }
 

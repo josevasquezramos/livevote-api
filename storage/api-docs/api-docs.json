@@ -6,6 +6,78 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/broadcasting/auth": {
+            "post": {
+                "tags": [
+                    "Broadcasting"
+                ],
+                "summary": "Authenticate broadcasting connection",
+                "description": "Authorizes a guest user to join a presence channel in Reverb/Pusher.",
+                "operationId": "4c7d386dc5b184e20cbd2a0329229a1a",
+                "parameters": [
+                    {
+                        "name": "X-Guest-Id",
+                        "in": "header",
+                        "description": "Unique identifier for the guest sent from the frontend.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "user_987654321"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Data automatically generated and sent by Laravel Echo.",
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "socket_id",
+                                    "channel_name"
+                                ],
+                                "properties": {
+                                    "socket_id": {
+                                        "type": "string",
+                                        "example": "12345.67890"
+                                    },
+                                    "channel_name": {
+                                        "type": "string",
+                                        "example": "presence-live-votes"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful authentication (Pusher/Reverb signature)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "auth": {
+                                            "type": "string",
+                                            "example": "app-key:d5c4b123..."
+                                        },
+                                        "channel_data": {
+                                            "type": "string",
+                                            "example": "{\"user_id\":\"user_987654321\",\"user_info\":{\"id\":\"user_987654321\"}}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden / Unauthorized"
+                    }
+                }
+            }
+        },
         "/api/vote": {
             "post": {
                 "tags": [
@@ -202,6 +274,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Broadcasting",
+            "description": "Broadcasting"
+        },
         {
             "name": "Voting",
             "description": "Voting"
